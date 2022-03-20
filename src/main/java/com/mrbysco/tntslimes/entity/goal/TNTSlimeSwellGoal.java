@@ -19,7 +19,6 @@ public class TNTSlimeSwellGoal extends Goal {
 
 	public boolean canUse() {
 		LivingEntity livingentity = this.tntSlime.getTarget();
-		System.out.println(livingentity != null ? this.tntSlime.distanceToSqr(livingentity) : "");
 		return this.tntSlime.getSwellDir() > 0 || livingentity != null && this.tntSlime.distanceToSqr(livingentity) < 9.0D;
 	}
 
