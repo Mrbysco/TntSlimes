@@ -166,18 +166,19 @@ public class TNTSlime extends Slime {
 
 	@Override
 	protected void setSize(int size, boolean resetHealth) {
-		this.explosionRadius = size;
-		this.entityData.set(ID_SIZE, size);
+		int i = Mth.clamp(size, 1, 127);
+		this.explosionRadius = Mth.clamp(size, 1, 16);
+		this.entityData.set(ID_SIZE, i);
 		this.reapplyPosition();
 		this.refreshDimensions();
 		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double) (size));
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue((double) (0.2F + 0.1F * size));
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(((double) size));
+		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue((double) (0.2F + 0.1F * i));
+		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(((double) i));
 		if (resetHealth) {
 			this.setHealth(this.getMaxHealth());
 		}
 
-		this.xpReward = size;
+		this.xpReward = i;
 	}
 
 	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
