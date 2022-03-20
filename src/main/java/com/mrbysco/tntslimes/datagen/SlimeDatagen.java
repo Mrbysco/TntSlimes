@@ -101,8 +101,8 @@ public class SlimeDatagen {
 
 		@Override
 		protected void registerModels() {
-			for(RegistryObject<Item> item : SlimeRegistry.ITEMS.getEntries()) {
-				if(item.get() instanceof SpawnEggItem) {
+			for (RegistryObject<Item> item : SlimeRegistry.ITEMS.getEntries()) {
+				if (item.get() instanceof SpawnEggItem) {
 					withExistingParent(item.get().getRegistryName().getPath(), new ResourceLocation("item/template_spawn_egg"));
 				}
 			}

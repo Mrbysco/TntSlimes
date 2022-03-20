@@ -62,8 +62,8 @@ public class TNTSlime extends Slime {
 	public void addAdditionalSaveData(CompoundTag tag) {
 		super.addAdditionalSaveData(tag);
 
-		tag.putShort("Fuse", (short)this.maxSwell);
-		tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
+		tag.putShort("Fuse", (short) this.maxSwell);
+		tag.putByte("ExplosionRadius", (byte) this.explosionRadius);
 		tag.putBoolean("ignited", this.isIgnited());
 	}
 
@@ -85,7 +85,7 @@ public class TNTSlime extends Slime {
 	}
 
 	public float getSwelling(float partialTick) {
-		return Mth.lerp(partialTick, (float)this.oldSwell, (float)this.swell) / (float)(this.maxSwell - 2);
+		return Mth.lerp(partialTick, (float) this.oldSwell, (float) this.swell) / (float) (this.maxSwell - 2);
 	}
 
 	public int getSwellDir() {
@@ -154,7 +154,7 @@ public class TNTSlime extends Slime {
 			Explosion.BlockInteraction explosion$blockinteraction = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.NONE;
 			float f = 1.0F;
 			this.dead = true;
-			this.level.explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, explosion$blockinteraction);
+			this.level.explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f, explosion$blockinteraction);
 			this.discard();
 		}
 	}
@@ -171,9 +171,9 @@ public class TNTSlime extends Slime {
 		this.entityData.set(ID_SIZE, i);
 		this.reapplyPosition();
 		this.refreshDimensions();
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double)(size));
-		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * i));
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(((double)i));
+		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double) (size));
+		this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue((double) (0.2F + 0.1F * i));
+		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(((double) i));
 		if (resetHealth) {
 			this.setHealth(this.getMaxHealth());
 		}
@@ -192,7 +192,7 @@ public class TNTSlime extends Slime {
 			}
 
 			ChunkPos chunkpos = new ChunkPos(pos);
-			boolean flag = WorldgenRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, ((WorldGenLevel)level).getSeed(), 987234911L).nextInt(10) == 0;
+			boolean flag = WorldgenRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, ((WorldGenLevel) level).getSeed(), 987234911L).nextInt(10) == 0;
 			if (random.nextInt(10) == 0 && flag && pos.getY() < 40) {
 				return checkMobSpawnRules(entityType, level, spawnType, pos, random);
 			}

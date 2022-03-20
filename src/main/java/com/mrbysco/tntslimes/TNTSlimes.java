@@ -17,27 +17,27 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(TNTSlimes.MOD_ID)
 public class TNTSlimes {
-    public static final String MOD_ID = "tntslimes";
-    public static final Logger LOGGER = LogManager.getLogger();
+	public static final String MOD_ID = "tntslimes";
+	public static final Logger LOGGER = LogManager.getLogger();
 
-    public TNTSlimes() {
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModLoadingContext.get().registerConfig(Type.COMMON, SlimeConfig.spawnSpec);
-        eventBus.register(SlimeConfig.class);
+	public TNTSlimes() {
+		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		ModLoadingContext.get().registerConfig(Type.COMMON, SlimeConfig.spawnSpec);
+		eventBus.register(SlimeConfig.class);
 
-        SlimeRegistry.ITEMS.register(eventBus);
-        SlimeRegistry.ENTITIES.register(eventBus);
+		SlimeRegistry.ITEMS.register(eventBus);
+		SlimeRegistry.ENTITIES.register(eventBus);
 
-        eventBus.addListener(this::setup);
-        eventBus.addListener(SlimeSetup::registerEntityAttributes);
+		eventBus.addListener(this::setup);
+		eventBus.addListener(SlimeSetup::registerEntityAttributes);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            eventBus.addListener(ClientHandler::registerEntityRenders);
-            eventBus.addListener(ClientHandler::registerLayerDefinitions);
-        });
-    }
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+			eventBus.addListener(ClientHandler::registerEntityRenders);
+			eventBus.addListener(ClientHandler::registerLayerDefinitions);
+		});
+	}
 
-    private void setup(final FMLCommonSetupEvent event) {
-        SlimeSetup.registerSpawnPlacement();
-    }
+	private void setup(final FMLCommonSetupEvent event) {
+		SlimeSetup.registerSpawnPlacement();
+	}
 }

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class TNTSlimeSwellGoal extends Goal{
+public class TNTSlimeSwellGoal extends Goal {
 	private final TNTSlime tntSlime;
 	@Nullable
 	private LivingEntity target;

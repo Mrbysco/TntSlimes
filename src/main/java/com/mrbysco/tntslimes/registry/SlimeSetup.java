@@ -27,7 +27,7 @@ public class SlimeSetup {
 			ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY, event.getName());
 			if (BiomeDictionary.hasType(biomeKey, Type.OVERWORLD)) {
 				int tntSlimeWeight = SlimeConfig.COMMON.weight.get();
-				if(tntSlimeWeight > 0) {
+				if (tntSlimeWeight > 0) {
 					event.getSpawns().getSpawner(MobCategory.MONSTER).add(new MobSpawnSettings.SpawnerData(SlimeRegistry.TNT_SLIME.get(), SlimeConfig.COMMON.weight.get(),
 							SlimeConfig.COMMON.minGroup.get(), SlimeConfig.COMMON.maxGroup.get()));
 				}

@@ -19,7 +19,7 @@ public class TNTSlimeRenderer extends SlimeRenderer {
 	@Override
 	protected void scale(Slime slime, PoseStack poseStack, float tick) {
 		super.scale(slime, poseStack, tick);
-		if(slime instanceof TNTSlime tntSlime) {
+		if (slime instanceof TNTSlime tntSlime) {
 			float f = tntSlime.getSwelling(tick);
 			float f1 = 1.0F + Mth.sin(f * 100.0F) * f * 0.01F;
 			f = Mth.clamp(f, 0.0F, 1.0F);
@@ -33,9 +33,9 @@ public class TNTSlimeRenderer extends SlimeRenderer {
 
 	@Override
 	protected float getWhiteOverlayProgress(Slime slime, float tick) {
-		if(slime instanceof TNTSlime tntSlime) {
+		if (slime instanceof TNTSlime tntSlime) {
 			float f = tntSlime.getSwelling(tick);
-			return (int)(f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
+			return (int) (f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
 		}
 		return super.getWhiteOverlayProgress(slime, tick);
 	}
