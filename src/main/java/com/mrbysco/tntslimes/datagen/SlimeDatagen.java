@@ -1,10 +1,9 @@
 package com.mrbysco.tntslimes.datagen;
 
-import com.mrbysco.tntslimes.TNTSlimes;
-import com.mrbysco.tntslimes.registry.SlimeRegistry;
-import net.minecraftforge.fml.common.Mod;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import com.mrbysco.tntslimes.TNTSlimes;
+import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.EntityLoot;
 import net.minecraft.data.loot.LootTableProvider;
@@ -22,6 +21,7 @@ import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.RegistryObject;
 

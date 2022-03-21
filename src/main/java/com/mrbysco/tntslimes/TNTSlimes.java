@@ -1,5 +1,6 @@
 package com.mrbysco.tntslimes;
 
+import com.mojang.logging.LogUtils;
 import com.mrbysco.tntslimes.client.ClientHandler;
 import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
@@ -12,13 +13,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Mod(TNTSlimes.MOD_ID)
 public class TNTSlimes {
 	public static final String MOD_ID = "tntslimes";
-	public static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LogUtils.getLogger();
 
 	public TNTSlimes() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();

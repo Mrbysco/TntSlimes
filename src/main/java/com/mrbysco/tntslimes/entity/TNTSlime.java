@@ -28,8 +28,6 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 
 public class TNTSlime extends Slime {
@@ -183,7 +181,8 @@ public class TNTSlime extends Slime {
 
 	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
 		if (level.getDifficulty() != Difficulty.PEACEFUL) {
-			if (Objects.equals(level.getBiomeName(pos), Optional.of(Biomes.SWAMP)) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5F && random.nextFloat() < level.getMoonBrightness() && level.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
+			if (level.getBiome(pos).is(Biomes.SWAMP) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5F &&
+					random.nextFloat() < level.getMoonBrightness() && level.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
 				return checkMobSpawnRules(entityType, level, spawnType, pos, random);
 			}
 
