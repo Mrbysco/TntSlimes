@@ -78,12 +78,12 @@ public class SlimeDatagen {
 				this.add(SlimeRegistry.TNT_SLIME.get(), LootTable.lootTable()
 						.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
 								.add(LootItem.lootTableItem(Items.SLIME_BALL)
-									.apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 1.0F)))
-									.apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+										.apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 1.0F)))
+										.apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
 						.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
 								.add(LootItem.lootTableItem(Blocks.TNT))
-									.when(LootItemKilledByPlayerCondition.killedByPlayer())
-									.when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.025F, 0.01F))));
+								.when(LootItemKilledByPlayerCondition.killedByPlayer())
+								.when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.025F, 0.01F))));
 			}
 
 			@Override

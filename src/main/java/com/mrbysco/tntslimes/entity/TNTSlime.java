@@ -1,5 +1,6 @@
 package com.mrbysco.tntslimes.entity;
 
+import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.entity.goal.TNTSlimeSwellGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -191,7 +192,7 @@ public class TNTSlime extends Slime {
 
 			ChunkPos chunkpos = new ChunkPos(pos);
 			boolean flag = WorldgenRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, ((WorldGenLevel) level).getSeed(), 987234911L).nextInt(10) == 0;
-			if (random.nextInt(10) == 0 && flag && pos.getY() < 40) {
+			if (random.nextInt(10) == 0 && flag && pos.getY() < SlimeConfig.COMMON.minY.get()) {
 				return checkMobSpawnRules(entityType, level, spawnType, pos, random);
 			}
 		}

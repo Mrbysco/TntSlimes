@@ -11,6 +11,7 @@ public class SlimeConfig {
 		public final ForgeConfigSpec.IntValue minGroup;
 		public final ForgeConfigSpec.IntValue maxGroup;
 		public final ForgeConfigSpec.IntValue weight;
+		public final ForgeConfigSpec.IntValue minY;
 
 		Common(ForgeConfigSpec.Builder builder) {
 			builder.push("Spawn settings")
@@ -27,6 +28,10 @@ public class SlimeConfig {
 			weight = builder
 					.comment("Spawn weight in which TNT Slimes should spawn [Default: 10]")
 					.defineInRange("weight", 10, 0, Integer.MAX_VALUE);
+
+			minY = builder
+					.comment("Defines from which Y level and below  a TNT slime can naturally spawn underground [Default: 40]")
+					.defineInRange("minY", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			builder.pop();
 		}
 	}
