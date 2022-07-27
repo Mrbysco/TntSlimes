@@ -14,9 +14,9 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class SlimeRegistry {
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, TNTSlimes.MOD_ID);
-	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, TNTSlimes.MOD_ID);
+	public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, TNTSlimes.MOD_ID);
 
-	public static final RegistryObject<EntityType<TNTSlime>> TNT_SLIME = ENTITIES.register("tnt_slime",
+	public static final RegistryObject<EntityType<TNTSlime>> TNT_SLIME = ENTITY_TYPES.register("tnt_slime",
 			() -> register("inquisitor", EntityType.Builder.<TNTSlime>of(TNTSlime::new, MobCategory.MONSTER)
 					.sized(2.04F, 2.04F).clientTrackingRange(10)));
 

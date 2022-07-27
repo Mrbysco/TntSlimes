@@ -1,17 +1,26 @@
 package com.mrbysco.tntslimes.datagen;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.EntityLoot;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -29,10 +38,14 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.data.JsonCodecProvider;
 import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.common.world.BiomeModifier;
+import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifier;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
@@ -47,15 +60,27 @@ import java.util.stream.Stream;
 public class SlimeDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
+		final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.builtinCopy());
 		DataGenerator generator = event.getGenerator();
 		ExistingFileHelper helper = event.getExistingFileHelper();
 
 		if (event.includeServer()) {
-			generator.addProvider(new Loots(generator));
+			generator.addProvider(event.includeServer(), new Loots(generator));
 		}
 		if (event.includeClient()) {
-			generator.addProvider(new Language(generator));
-			generator.addProvider(new ItemModels(generator, helper));
+			generator.addProvider(event.includeServer(), new Language(generator));
+			generator.addProvider(event.includeServer(), new ItemModels(generator, helper));
+
+			final HolderSet.Named<Biome> forestsTag = new HolderSet.Named<>(ops.registry(Registry.BIOME_REGISTRY).get(), BiomeTags.IS_OVERWORLD);
+			final BiomeModifier addSpawn = AddSpawnsBiomeModifier.singleSpawn(
+					forestsTag,
+					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
+
+			generator.addProvider(event.includeServer(), JsonCodecProvider.forDatapackRegistry(
+					generator, helper, TNTSlimes.MOD_ID, ops, ForgeRegistries.Keys.BIOME_MODIFIERS,
+					Map.of(new ResourceLocation(TNTSlimes.MOD_ID, "add_tnt_slime_spawn"), addSpawn
+					)
+			));
 		}
 	}
 
@@ -88,7 +113,7 @@ public class SlimeDatagen {
 
 			@Override
 			protected Iterable<EntityType<?>> getKnownEntities() {
-				Stream<EntityType<?>> entityTypeStream = SlimeRegistry.ENTITIES.getEntries().stream().map(RegistryObject::get);
+				Stream<EntityType<?>> entityTypeStream = SlimeRegistry.ENTITY_TYPES.getEntries().stream().map(RegistryObject::get);
 				return entityTypeStream::iterator;
 			}
 		}
@@ -121,7 +146,7 @@ public class SlimeDatagen {
 		protected void registerModels() {
 			for (RegistryObject<Item> item : SlimeRegistry.ITEMS.getEntries()) {
 				if (item.get() instanceof SpawnEggItem) {
-					withExistingParent(item.get().getRegistryName().getPath(), new ResourceLocation("item/template_spawn_egg"));
+					withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), new ResourceLocation("item/template_spawn_egg"));
 				}
 			}
 		}

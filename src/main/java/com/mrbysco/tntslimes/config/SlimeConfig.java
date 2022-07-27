@@ -8,30 +8,16 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class SlimeConfig {
 	public static class Common {
-		public final ForgeConfigSpec.IntValue minGroup;
-		public final ForgeConfigSpec.IntValue maxGroup;
-		public final ForgeConfigSpec.IntValue weight;
 		public final ForgeConfigSpec.IntValue minY;
 
 		Common(ForgeConfigSpec.Builder builder) {
 			builder.push("Spawn settings")
 					.comment("Settings for the slime spawn rates");
 
-			minGroup = builder
-					.comment("Min group size in which TNT Slimes should spawn [Default: 1]")
-					.defineInRange("minGroup", 1, 0, 64);
-
-			maxGroup = builder
-					.comment("Max group size in which TNT Slimes should spawn [Default: 2]")
-					.defineInRange("maxGroup", 2, 0, 64);
-
-			weight = builder
-					.comment("Spawn weight in which TNT Slimes should spawn [Default: 10]")
-					.defineInRange("weight", 10, 0, Integer.MAX_VALUE);
-
 			minY = builder
 					.comment("Defines from which Y level and below  a TNT slime can naturally spawn underground [Default: 40]")
 					.defineInRange("minY", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
 			builder.pop();
 		}
 	}

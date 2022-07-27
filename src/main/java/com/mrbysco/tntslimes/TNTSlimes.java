@@ -26,7 +26,7 @@ public class TNTSlimes {
 		eventBus.register(SlimeConfig.class);
 
 		SlimeRegistry.ITEMS.register(eventBus);
-		SlimeRegistry.ENTITIES.register(eventBus);
+		SlimeRegistry.ENTITY_TYPES.register(eventBus);
 
 		eventBus.addListener(this::setup);
 		eventBus.addListener(SlimeSetup::registerEntityAttributes);

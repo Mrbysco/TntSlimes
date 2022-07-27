@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,8 +28,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
-
-import java.util.Random;
 
 public class TNTSlime extends Slime {
 	private static final EntityDataAccessor<Integer> DATA_SWELL_DIR = SynchedEntityData.defineId(TNTSlime.class, EntityDataSerializers.INT);
@@ -163,7 +162,7 @@ public class TNTSlime extends Slime {
 	}
 
 	@Override
-	protected void setSize(int size, boolean resetHealth) {
+	public void setSize(int size, boolean resetHealth) {
 		int i = Mth.clamp(size, 1, 127);
 		this.explosionRadius = Mth.clamp(size, 1, 16);
 		this.entityData.set(ID_SIZE, i);
@@ -179,7 +178,7 @@ public class TNTSlime extends Slime {
 		this.xpReward = i;
 	}
 
-	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
 		if (level.getDifficulty() != Difficulty.PEACEFUL) {
 			if (level.getBiome(pos).is(Biomes.SWAMP) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5F &&
 					random.nextFloat() < level.getMoonBrightness() && level.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
