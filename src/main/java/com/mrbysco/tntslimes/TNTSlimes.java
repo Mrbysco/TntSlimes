@@ -5,13 +5,14 @@ import com.mrbysco.tntslimes.client.ClientHandler;
 import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import com.mrbysco.tntslimes.registry.SlimeSetup;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -28,7 +29,9 @@ public class TNTSlimes {
 		SlimeRegistry.ITEMS.register(eventBus);
 		SlimeRegistry.ENTITY_TYPES.register(eventBus);
 
-		eventBus.addListener(this::setup);
+		eventBus.addListener(this::addTabContents);
+
+		eventBus.addListener(SlimeSetup::registerSpawnPlacements);
 		eventBus.addListener(SlimeSetup::registerEntityAttributes);
 
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
@@ -37,7 +40,9 @@ public class TNTSlimes {
 		});
 	}
 
-	private void setup(final FMLCommonSetupEvent event) {
-		SlimeSetup.registerSpawnPlacement();
+	private void addTabContents(final CreativeModeTabEvent.BuildContents event) {
+		if (event.getTab() == CreativeModeTabs.SPAWN_EGGS) {
+			event.accept(SlimeRegistry.TNT_SLIME_SPAWN_EGG);
+		}
 	}
 }

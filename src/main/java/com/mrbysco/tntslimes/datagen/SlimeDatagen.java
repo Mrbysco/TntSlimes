@@ -1,21 +1,25 @@
 package com.mrbysco.tntslimes.datagen;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.EntityLoot;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
@@ -24,13 +28,11 @@ import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTable.Builder;
 import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithLootingCondition;
@@ -50,9 +52,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.Set;
 import java.util.stream.Stream;
 
 
@@ -60,46 +60,56 @@ import java.util.stream.Stream;
 public class SlimeDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
-		final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.builtinCopy());
+		HolderLookup.Provider provider = getProvider();
+		final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, provider);
 		DataGenerator generator = event.getGenerator();
+		PackOutput packOutput = generator.getPackOutput();
 		ExistingFileHelper helper = event.getExistingFileHelper();
 
 		if (event.includeServer()) {
-			generator.addProvider(event.includeServer(), new Loots(generator));
+			generator.addProvider(event.includeServer(), new Loots(packOutput));
 		}
 		if (event.includeClient()) {
-			generator.addProvider(event.includeServer(), new Language(generator));
-			generator.addProvider(event.includeServer(), new ItemModels(generator, helper));
+			generator.addProvider(event.includeServer(), new Language(packOutput));
+			generator.addProvider(event.includeServer(), new ItemModels(packOutput, helper));
 
-			final HolderSet.Named<Biome> forestsTag = new HolderSet.Named<>(ops.registry(Registry.BIOME_REGISTRY).get(), BiomeTags.IS_OVERWORLD);
+			final HolderLookup.RegistryLookup<Biome> biomeReg = provider.lookupOrThrow(Registries.BIOME);
 			final BiomeModifier addSpawn = AddSpawnsBiomeModifier.singleSpawn(
-					forestsTag,
+					HolderSet.emptyNamed(biomeReg, BiomeTags.IS_OVERWORLD),
 					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
 
 			generator.addProvider(event.includeServer(), JsonCodecProvider.forDatapackRegistry(
-					generator, helper, TNTSlimes.MOD_ID, ops, ForgeRegistries.Keys.BIOME_MODIFIERS,
-					Map.of(new ResourceLocation(TNTSlimes.MOD_ID, "add_tnt_slime_spawn"), addSpawn
+					packOutput, helper, TNTSlimes.MOD_ID, ops, ForgeRegistries.Keys.BIOME_MODIFIERS,
+					Map.of(
+							new ResourceLocation(TNTSlimes.MOD_ID, "add_tnt_slime_spawn"), addSpawn
 					)
 			));
 		}
 	}
 
+	private static HolderLookup.Provider getProvider() {
+		final RegistrySetBuilder registryBuilder = new RegistrySetBuilder();
+		// We need the BIOME registry to be present so we can use a biome tag, doesn't matter that it's empty
+		registryBuilder.add(Registries.BIOME, $ -> {
+		});
+		RegistryAccess.Frozen regAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+		return registryBuilder.buildPatch(regAccess, VanillaRegistries.createLookup());
+	}
+
 	private static class Loots extends LootTableProvider {
-		public Loots(DataGenerator gen) {
-			super(gen);
+		public Loots(PackOutput packOutput) {
+			super(packOutput, Set.of(), List.of(
+					new SubProviderEntry(SlimeLootTables::new, LootContextParamSets.ENTITY)
+			));
 		}
 
-		@Override
-		protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, Builder>>>, LootContextParamSet>> getTables() {
-			return ImmutableList.of(
-					Pair.of(SlimeLootTables::new, LootContextParamSets.ENTITY)
-			);
-		}
-
-		public static class SlimeLootTables extends EntityLoot {
+		public static class SlimeLootTables extends EntityLootSubProvider {
+			protected SlimeLootTables() {
+				super(FeatureFlags.REGISTRY.allFlags());
+			}
 
 			@Override
-			protected void addTables() {
+			public void generate() {
 				this.add(SlimeRegistry.TNT_SLIME.get(), LootTable.lootTable()
 						.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
 								.add(LootItem.lootTableItem(Items.SLIME_BALL)
@@ -112,9 +122,8 @@ public class SlimeDatagen {
 			}
 
 			@Override
-			protected Iterable<EntityType<?>> getKnownEntities() {
-				Stream<EntityType<?>> entityTypeStream = SlimeRegistry.ENTITY_TYPES.getEntries().stream().map(RegistryObject::get);
-				return entityTypeStream::iterator;
+			protected Stream<EntityType<?>> getKnownEntityTypes() {
+				return SlimeRegistry.ENTITY_TYPES.getEntries().stream().map(RegistryObject::get);
 			}
 		}
 
@@ -125,8 +134,8 @@ public class SlimeDatagen {
 	}
 
 	private static class Language extends LanguageProvider {
-		public Language(DataGenerator gen) {
-			super(gen, TNTSlimes.MOD_ID, "en_us");
+		public Language(PackOutput packOutput) {
+			super(packOutput, TNTSlimes.MOD_ID, "en_us");
 		}
 
 		@Override
@@ -138,8 +147,8 @@ public class SlimeDatagen {
 	}
 
 	private static class ItemModels extends ItemModelProvider {
-		public ItemModels(DataGenerator gen, ExistingFileHelper helper) {
-			super(gen, TNTSlimes.MOD_ID, helper);
+		public ItemModels(PackOutput packOutput, ExistingFileHelper helper) {
+			super(packOutput, TNTSlimes.MOD_ID, helper);
 		}
 
 		@Override
