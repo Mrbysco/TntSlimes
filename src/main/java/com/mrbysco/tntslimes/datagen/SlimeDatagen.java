@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
@@ -16,6 +17,7 @@ import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityType;
@@ -39,8 +41,8 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWit
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.JsonCodecProvider;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifier;
@@ -53,6 +55,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 
@@ -78,22 +81,29 @@ public class SlimeDatagen {
 					HolderSet.emptyNamed(biomeReg, BiomeTags.IS_OVERWORLD),
 					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
 
-			generator.addProvider(event.includeServer(), JsonCodecProvider.forDatapackRegistry(
-					packOutput, helper, TNTSlimes.MOD_ID, ops, ForgeRegistries.Keys.BIOME_MODIFIERS,
-					Map.of(
-							new ResourceLocation(TNTSlimes.MOD_ID, "add_tnt_slime_spawn"), addSpawn
-					)
-			));
+			generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(
+					packOutput, CompletableFuture.supplyAsync(SlimeDatagen::getProvider), Set.of(TNTSlimes.MOD_ID)));
 		}
 	}
 
 	private static HolderLookup.Provider getProvider() {
 		final RegistrySetBuilder registryBuilder = new RegistrySetBuilder();
 		// We need the BIOME registry to be present so we can use a biome tag, doesn't matter that it's empty
-		registryBuilder.add(Registries.BIOME, $ -> {
+		registryBuilder.add(Registries.BIOME, context -> {
+		});
+		registryBuilder.add(ForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
+			final HolderGetter<Biome> biomeHolderGetter = context.lookup(Registries.BIOME);
+			final BiomeModifier addSpawn = AddSpawnsBiomeModifier.singleSpawn(
+					biomeHolderGetter.getOrThrow(BiomeTags.IS_OVERWORLD),
+					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
+			context.register(createModifierKey("add_tnt_slime_spawn"), addSpawn);
 		});
 		RegistryAccess.Frozen regAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
 		return registryBuilder.buildPatch(regAccess, VanillaRegistries.createLookup());
+	}
+
+	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
+		return ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(TNTSlimes.MOD_ID, name));
 	}
 
 	private static class Loots extends LootTableProvider {
