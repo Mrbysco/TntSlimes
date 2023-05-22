@@ -76,11 +76,6 @@ public class SlimeDatagen {
 			generator.addProvider(event.includeServer(), new Language(packOutput));
 			generator.addProvider(event.includeServer(), new ItemModels(packOutput, helper));
 
-			final HolderLookup.RegistryLookup<Biome> biomeReg = provider.lookupOrThrow(Registries.BIOME);
-			final BiomeModifier addSpawn = AddSpawnsBiomeModifier.singleSpawn(
-					HolderSet.emptyNamed(biomeReg, BiomeTags.IS_OVERWORLD),
-					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
-
 			generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(
 					packOutput, CompletableFuture.supplyAsync(SlimeDatagen::getProvider), Set.of(TNTSlimes.MOD_ID)));
 		}
