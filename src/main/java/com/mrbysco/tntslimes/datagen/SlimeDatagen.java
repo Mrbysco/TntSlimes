@@ -6,7 +6,6 @@ import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,7 +29,6 @@ import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
@@ -134,7 +132,7 @@ public class SlimeDatagen {
 
 		@Override
 		protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationContext) {
-			map.forEach((name, table) -> LootTables.validate(validationContext, name, table));
+			map.forEach((name, table) -> table.validate(validationContext));
 		}
 	}
 

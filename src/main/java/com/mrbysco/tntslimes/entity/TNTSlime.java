@@ -131,26 +131,26 @@ public class TNTSlime extends Slime {
 	protected InteractionResult mobInteract(Player player, InteractionHand interactionHand) {
 		ItemStack itemstack = player.getItemInHand(interactionHand);
 		if (itemstack.is(Items.FLINT_AND_STEEL)) {
-			this.level.playSound(player, this.getX(), this.getY(), this.getZ(), SoundEvents.FLINTANDSTEEL_USE, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
-			if (!this.level.isClientSide) {
+			this.level().playSound(player, this.getX(), this.getY(), this.getZ(), SoundEvents.FLINTANDSTEEL_USE, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+			if (!this.level().isClientSide) {
 				this.ignite();
 				itemstack.hurtAndBreak(1, player, (p_32290_) -> {
 					p_32290_.broadcastBreakEvent(interactionHand);
 				});
 			}
 
-			return InteractionResult.sidedSuccess(this.level.isClientSide);
+			return InteractionResult.sidedSuccess(this.level().isClientSide);
 		} else {
 			return super.mobInteract(player, interactionHand);
 		}
 	}
 
 	private void explodeSlime() {
-		if (!this.level.isClientSide) {
-			Level.ExplosionInteraction explosion$blockinteraction = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE;
+		if (!this.level().isClientSide) {
+			Level.ExplosionInteraction explosion$blockinteraction = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE;
 			float f = 1.0F;
 			this.dead = true;
-			this.level.explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f, explosion$blockinteraction);
+			this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f, explosion$blockinteraction);
 			this.discard();
 		}
 	}
