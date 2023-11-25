@@ -21,9 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
 import net.minecraft.world.level.block.Blocks;
@@ -38,22 +36,22 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithLootingCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ForgeBiomeModifiers.AddSpawnsBiomeModifier;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.BiomeModifiers;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 
@@ -84,9 +82,9 @@ public class SlimeDatagen {
 		// We need the BIOME registry to be present so we can use a biome tag, doesn't matter that it's empty
 		registryBuilder.add(Registries.BIOME, context -> {
 		});
-		registryBuilder.add(ForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
+		registryBuilder.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
 			final HolderGetter<Biome> biomeHolderGetter = context.lookup(Registries.BIOME);
-			final BiomeModifier addSpawn = AddSpawnsBiomeModifier.singleSpawn(
+			final BiomeModifier addSpawn = BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
 					biomeHolderGetter.getOrThrow(BiomeTags.IS_OVERWORLD),
 					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
 			context.register(createModifierKey("add_tnt_slime_spawn"), addSpawn);
@@ -96,7 +94,7 @@ public class SlimeDatagen {
 	}
 
 	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
-		return ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(TNTSlimes.MOD_ID, name));
+		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(TNTSlimes.MOD_ID, name));
 	}
 
 	private static class Loots extends LootTableProvider {
@@ -126,7 +124,7 @@ public class SlimeDatagen {
 
 			@Override
 			protected Stream<EntityType<?>> getKnownEntityTypes() {
-				return SlimeRegistry.ENTITY_TYPES.getEntries().stream().map(RegistryObject::get);
+				return SlimeRegistry.ENTITY_TYPES.getEntries().stream().map(Supplier::get);
 			}
 		}
 
@@ -156,11 +154,7 @@ public class SlimeDatagen {
 
 		@Override
 		protected void registerModels() {
-			for (RegistryObject<Item> item : SlimeRegistry.ITEMS.getEntries()) {
-				if (item.get() instanceof SpawnEggItem) {
-					withExistingParent(ForgeRegistries.ITEMS.getKey(item.get()).getPath(), new ResourceLocation("item/template_spawn_egg"));
-				}
-			}
+			withExistingParent(SlimeRegistry.TNT_SLIME_SPAWN_EGG.getId().getPath(), new ResourceLocation("item/template_spawn_egg"));
 		}
 	}
 }

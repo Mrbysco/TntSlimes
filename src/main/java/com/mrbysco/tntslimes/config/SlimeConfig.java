@@ -1,16 +1,16 @@
 package com.mrbysco.tntslimes.config;
 
 import com.mrbysco.tntslimes.TNTSlimes;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class SlimeConfig {
 	public static class Common {
-		public final ForgeConfigSpec.IntValue minY;
+		public final ModConfigSpec.IntValue minY;
 
-		Common(ForgeConfigSpec.Builder builder) {
+		Common(ModConfigSpec.Builder builder) {
 			builder.push("Spawn settings")
 					.comment("Settings for the slime spawn rates");
 
@@ -22,11 +22,11 @@ public class SlimeConfig {
 		}
 	}
 
-	public static final ForgeConfigSpec spawnSpec;
+	public static final ModConfigSpec spawnSpec;
 	public static final Common COMMON;
 
 	static {
-		final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
+		final Pair<Common, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Common::new);
 		spawnSpec = specPair.getRight();
 		COMMON = specPair.getLeft();
 	}

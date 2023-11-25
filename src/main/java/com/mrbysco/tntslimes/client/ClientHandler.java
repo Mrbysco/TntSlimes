@@ -6,7 +6,7 @@ import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import net.minecraft.client.model.SlimeModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class ClientHandler {
 	public static final ModelLayerLocation TNT_SLIME = new ModelLayerLocation(new ResourceLocation(TNTSlimes.MOD_ID, "tnt_slime"), "main");
