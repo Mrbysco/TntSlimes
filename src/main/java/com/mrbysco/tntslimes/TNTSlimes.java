@@ -10,7 +10,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
@@ -20,8 +19,7 @@ public class TNTSlimes {
 	public static final String MOD_ID = "tntslimes";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
-	public TNTSlimes() {
-		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public TNTSlimes(IEventBus eventBus) {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SlimeConfig.spawnSpec);
 		eventBus.register(SlimeConfig.class);
 

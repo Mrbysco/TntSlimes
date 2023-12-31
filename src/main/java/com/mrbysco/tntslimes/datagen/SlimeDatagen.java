@@ -1,11 +1,9 @@
 package com.mrbysco.tntslimes.datagen;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
+import net.minecraft.core.Cloner;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,7 +13,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -59,8 +56,6 @@ import java.util.stream.Stream;
 public class SlimeDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
-		HolderLookup.Provider provider = getProvider();
-		final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, provider);
 		DataGenerator generator = event.getGenerator();
 		PackOutput packOutput = generator.getPackOutput();
 		ExistingFileHelper helper = event.getExistingFileHelper();
@@ -77,9 +72,9 @@ public class SlimeDatagen {
 		}
 	}
 
-	private static HolderLookup.Provider getProvider() {
+	private static RegistrySetBuilder.PatchedRegistries getProvider() {
 		final RegistrySetBuilder registryBuilder = new RegistrySetBuilder();
-		// We need the BIOME registry to be present so we can use a biome tag, doesn't matter that it's empty
+		// We need the BIOME registry to be present, so we can use a biome tag, doesn't matter that it's empty
 		registryBuilder.add(Registries.BIOME, context -> {
 		});
 		registryBuilder.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
@@ -90,7 +85,9 @@ public class SlimeDatagen {
 			context.register(createModifierKey("add_tnt_slime_spawn"), addSpawn);
 		});
 		RegistryAccess.Frozen regAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-		return registryBuilder.buildPatch(regAccess, VanillaRegistries.createLookup());
+		Cloner.Factory cloner$factory = new Cloner.Factory();
+		net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().forEach(data -> data.runWithArguments(cloner$factory::addCodec));
+		return registryBuilder.buildPatch(regAccess, VanillaRegistries.createLookup(), cloner$factory);
 	}
 
 	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
