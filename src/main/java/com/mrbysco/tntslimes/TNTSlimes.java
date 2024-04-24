@@ -6,11 +6,11 @@ import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import com.mrbysco.tntslimes.registry.SlimeSetup;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
@@ -19,8 +19,8 @@ public class TNTSlimes {
 	public static final String MOD_ID = "tntslimes";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
-	public TNTSlimes(IEventBus eventBus) {
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SlimeConfig.spawnSpec);
+	public TNTSlimes(IEventBus eventBus, Dist dist, ModContainer container) {
+		container.registerConfig(ModConfig.Type.COMMON, SlimeConfig.spawnSpec);
 		eventBus.register(SlimeConfig.class);
 
 		SlimeRegistry.ITEMS.register(eventBus);
@@ -31,7 +31,7 @@ public class TNTSlimes {
 		eventBus.addListener(SlimeSetup::registerSpawnPlacements);
 		eventBus.addListener(SlimeSetup::registerEntityAttributes);
 
-		if (FMLEnvironment.dist.isClient()) {
+		if (dist.isClient()) {
 			eventBus.addListener(ClientHandler::registerEntityRenders);
 			eventBus.addListener(ClientHandler::registerLayerDefinitions);
 		}

@@ -4,8 +4,10 @@ import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import net.minecraft.core.Cloner;
 import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -16,6 +18,7 @@ import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
@@ -34,7 +37,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWit
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -52,16 +55,17 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class SlimeDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
 		DataGenerator generator = event.getGenerator();
 		PackOutput packOutput = generator.getPackOutput();
 		ExistingFileHelper helper = event.getExistingFileHelper();
+		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
 		if (event.includeServer()) {
-			generator.addProvider(event.includeServer(), new Loots(packOutput));
+			generator.addProvider(event.includeServer(), new Loots(packOutput, lookupProvider));
 		}
 		if (event.includeClient()) {
 			generator.addProvider(event.includeServer(), new Language(packOutput));
@@ -95,10 +99,10 @@ public class SlimeDatagen {
 	}
 
 	private static class Loots extends LootTableProvider {
-		public Loots(PackOutput packOutput) {
+		public Loots(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> completableFuture) {
 			super(packOutput, Set.of(), List.of(
 					new SubProviderEntry(SlimeLootTables::new, LootContextParamSets.ENTITY)
-			));
+			), completableFuture);
 		}
 
 		public static class SlimeLootTables extends EntityLootSubProvider {
@@ -126,8 +130,8 @@ public class SlimeDatagen {
 		}
 
 		@Override
-		protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationContext) {
-			map.forEach((name, table) -> table.validate(validationContext));
+		protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
+			super.validate(writableregistry, validationcontext, problemreporter$collector);
 		}
 	}
 

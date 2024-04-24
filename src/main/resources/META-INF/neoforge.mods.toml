@@ -15,12 +15,12 @@ Wait, are you gonna tell me slimes can't hold TNT?
 [[dependencies.tntslimes]]
 modId="minecraft"
 type="REQUIRED"
-versionRange="[1.20.4,1.21)"
+versionRange="[1.20.5,1.21)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.tntslimes]]
 modId="neoforge"
 type="REQUIRED"
-versionRange="[20.4.60-beta,)"
+versionRange="[20.5.0-beta,)"
 ordering="NONE"
 side="BOTH"

@@ -49,10 +49,10 @@ public class TNTSlime extends Slime {
 	}
 
 	@Override
-	protected void defineSynchedData() {
-		super.defineSynchedData();
-		this.entityData.define(DATA_SWELL_DIR, -1);
-		this.entityData.define(DATA_IS_IGNITED, false);
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(DATA_SWELL_DIR, -1);
+		builder.define(DATA_IS_IGNITED, false);
 	}
 
 	@Override
@@ -129,20 +129,18 @@ public class TNTSlime extends Slime {
 		super.tick();
 	}
 
-	protected InteractionResult mobInteract(Player player, InteractionHand interactionHand) {
-		ItemStack itemstack = player.getItemInHand(interactionHand);
+	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+		ItemStack itemstack = player.getItemInHand(hand);
 		if (itemstack.is(Items.FLINT_AND_STEEL)) {
 			this.level().playSound(player, this.getX(), this.getY(), this.getZ(), SoundEvents.FLINTANDSTEEL_USE, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
 			if (!this.level().isClientSide) {
 				this.ignite();
-				itemstack.hurtAndBreak(1, player, (p_32290_) -> {
-					p_32290_.broadcastBreakEvent(interactionHand);
-				});
+				itemstack.hurtAndBreak(1, player, getSlotForHand(hand));
 			}
 
 			return InteractionResult.sidedSuccess(this.level().isClientSide);
 		} else {
-			return super.mobInteract(player, interactionHand);
+			return super.mobInteract(player, hand);
 		}
 	}
 
