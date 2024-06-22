@@ -29,11 +29,11 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
+import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithLootingCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -48,7 +48,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -95,7 +94,7 @@ public class SlimeDatagen {
 	}
 
 	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
-		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, new ResourceLocation(TNTSlimes.MOD_ID, name));
+		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, name));
 	}
 
 	private static class Loots extends LootTableProvider {
@@ -106,8 +105,8 @@ public class SlimeDatagen {
 		}
 
 		public static class SlimeLootTables extends EntityLootSubProvider {
-			protected SlimeLootTables() {
-				super(FeatureFlags.REGISTRY.allFlags());
+			protected SlimeLootTables(HolderLookup.Provider provider) {
+				super(FeatureFlags.REGISTRY.allFlags(), provider);
 			}
 
 			@Override
@@ -116,11 +115,15 @@ public class SlimeDatagen {
 						.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
 								.add(LootItem.lootTableItem(Items.SLIME_BALL)
 										.apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 1.0F)))
-										.apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+										.apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))
+								)
+						)
 						.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
 								.add(LootItem.lootTableItem(Blocks.TNT))
 								.when(LootItemKilledByPlayerCondition.killedByPlayer())
-								.when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.025F, 0.01F))));
+								.when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.025F, 0.01F))
+						)
+				);
 			}
 
 			@Override
@@ -155,7 +158,7 @@ public class SlimeDatagen {
 
 		@Override
 		protected void registerModels() {
-			withExistingParent(SlimeRegistry.TNT_SLIME_SPAWN_EGG.getId().getPath(), new ResourceLocation("item/template_spawn_egg"));
+			withExistingParent(SlimeRegistry.TNT_SLIME_SPAWN_EGG.getId().getPath(), ResourceLocation.withDefaultNamespace("item/template_spawn_egg"));
 		}
 	}
 }

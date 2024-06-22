@@ -10,7 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
 
 public class TNTSlimeRenderer extends SlimeRenderer {
-	private static final ResourceLocation TNT_SLIME_TEXTURE = new ResourceLocation(TNTSlimes.MOD_ID, "textures/entity/tnt_slime/tnt_slime.png");
+	private static final ResourceLocation TNT_SLIME_TEXTURE = ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, "textures/entity/tnt_slime/tnt_slime.png");
 
 	public TNTSlimeRenderer(EntityRendererProvider.Context context) {
 		super(context);

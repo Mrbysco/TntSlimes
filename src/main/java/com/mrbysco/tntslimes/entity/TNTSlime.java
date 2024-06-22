@@ -125,7 +125,6 @@ public class TNTSlime extends Slime {
 				this.explodeSlime();
 			}
 		}
-
 		super.tick();
 	}
 
@@ -146,7 +145,7 @@ public class TNTSlime extends Slime {
 
 	private void explodeSlime() {
 		if (!this.level().isClientSide) {
-			Level.ExplosionInteraction explosionInteraction = EventHooks.getMobGriefingEvent(this.level(), this) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE;
+			Level.ExplosionInteraction explosionInteraction = EventHooks.canEntityGrief(this.level(), this) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE;
 			float f = 1.0F;
 			this.dead = true;
 			this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f, explosionInteraction);

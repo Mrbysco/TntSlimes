@@ -17,8 +17,9 @@ public class SlimeRegistry {
 
 	public static final DeferredHolder<EntityType<?>, EntityType<TNTSlime>> TNT_SLIME = ENTITY_TYPES.register("tnt_slime",
 			() -> EntityType.Builder.<TNTSlime>of(TNTSlime::new, MobCategory.MONSTER)
-					.sized(2.04F, 2.04F).clientTrackingRange(10).build("tnt_slime"));
+					.sized(0.52F, 0.52F).eyeHeight(0.325F)
+					.clientTrackingRange(10).spawnDimensionsScale(4.0F).build("tnt_slime"));
 
 	public static final DeferredItem<DeferredSpawnEggItem> TNT_SLIME_SPAWN_EGG = ITEMS.register("tnt_slime_spawn_egg", () ->
-			new DeferredSpawnEggItem(TNT_SLIME::get, 0xb11527, 0xdb2f1a, (new Item.Properties())));
+			new DeferredSpawnEggItem(SlimeRegistry.TNT_SLIME, 0xb11527, 0xdb2f1a, (new Item.Properties())));
 }

@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class ClientHandler {
-	public static final ModelLayerLocation TNT_SLIME = new ModelLayerLocation(new ResourceLocation(TNTSlimes.MOD_ID, "tnt_slime"), "main");
-	public static final ModelLayerLocation TNT_SLIME_OUTER = new ModelLayerLocation(new ResourceLocation(TNTSlimes.MOD_ID, "tnt_slime"), "outer");
+	public static final ModelLayerLocation TNT_SLIME = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, "tnt_slime"), "main");
+	public static final ModelLayerLocation TNT_SLIME_OUTER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, "tnt_slime"), "outer");
 
 	public static void registerEntityRenders(EntityRenderersEvent.RegisterRenderers event) {
 		event.registerEntityRenderer(SlimeRegistry.TNT_SLIME.get(), TNTSlimeRenderer::new);
