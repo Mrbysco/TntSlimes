@@ -12,6 +12,7 @@ public class SlimeConfig {
 
 		Common(ModConfigSpec.Builder builder) {
 			builder.push("Spawn settings")
+					.translation("tntslimes.configuration.spawn_settings")
 					.comment("Settings for the slime spawn rates");
 
 			minY = builder
