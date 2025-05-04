@@ -5,6 +5,7 @@ import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import net.minecraft.core.Cloner;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.WritableRegistry;
@@ -71,31 +72,33 @@ public class SlimeDatagen {
 			generator.addProvider(event.includeServer(), new Language(packOutput));
 			generator.addProvider(event.includeServer(), new ItemModels(packOutput, helper));
 
-			generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(
-					packOutput, CompletableFuture.supplyAsync(SlimeDatagen::getProvider), Set.of(TNTSlimes.MOD_ID)));
+			generator.addProvider(event.includeServer(), new DatapackEntries(
+					packOutput,
+					event.getLookupProvider(),
+					Set.of(TNTSlimes.MOD_ID)
+			));
 		}
-	}
-
-	private static RegistrySetBuilder.PatchedRegistries getProvider() {
-		final RegistrySetBuilder registryBuilder = new RegistrySetBuilder();
-		// We need the BIOME registry to be present, so we can use a biome tag, doesn't matter that it's empty
-		registryBuilder.add(Registries.BIOME, context -> {
-		});
-		registryBuilder.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
-			final HolderGetter<Biome> biomeHolderGetter = context.lookup(Registries.BIOME);
-			final BiomeModifier addSpawn = BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
-					biomeHolderGetter.getOrThrow(BiomeTags.IS_OVERWORLD),
-					new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
-			context.register(createModifierKey("add_tnt_slime_spawn"), addSpawn);
-		});
-		RegistryAccess.Frozen regAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-		Cloner.Factory cloner$factory = new Cloner.Factory();
-		net.neoforged.neoforge.registries.DataPackRegistriesHooks.getDataPackRegistriesWithDimensions().forEach(data -> data.runWithArguments(cloner$factory::addCodec));
-		return registryBuilder.buildPatch(regAccess, VanillaRegistries.createLookup(), cloner$factory);
 	}
 
 	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
 		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, name));
+	}
+
+	private static class DatapackEntries extends DatapackBuiltinEntriesProvider {
+		public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
+				.add(Registries.BIOME, context -> {
+				})
+				.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {
+					final HolderGetter<Biome> biomeHolderGetter = context.lookup(Registries.BIOME);
+					final BiomeModifier addSpawn = BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
+							biomeHolderGetter.getOrThrow(BiomeTags.IS_OVERWORLD),
+							new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
+					context.register(createModifierKey("add_tnt_slime_spawn"), addSpawn);
+				});
+
+		public DatapackEntries(PackOutput output, CompletableFuture<Provider> registries, Set<String> modIds) {
+			super(output, registries, BUILDER, modIds);
+		}
 	}
 
 	private static class Loots extends LootTableProvider {
