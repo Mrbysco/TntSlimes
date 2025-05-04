@@ -11,9 +11,9 @@ public class SlimeConfig {
 		public final ModConfigSpec.IntValue minY;
 
 		Common(ModConfigSpec.Builder builder) {
-			builder.push("Spawn settings")
+			builder.comment("Settings for the slime spawn rates")
 					.translation("tntslimes.configuration.spawn_settings")
-					.comment("Settings for the slime spawn rates");
+					.push("Spawn settings");
 
 			minY = builder
 					.comment("Defines from which Y level and below  a TNT slime can naturally spawn underground [Default: 40]")

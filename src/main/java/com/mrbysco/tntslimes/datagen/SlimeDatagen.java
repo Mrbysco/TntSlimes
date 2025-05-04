@@ -46,6 +46,7 @@ import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -148,6 +149,22 @@ public class SlimeDatagen {
 			addEntityType(SlimeRegistry.TNT_SLIME, "TNT Slime");
 
 			addItem(SlimeRegistry.TNT_SLIME_SPAWN_EGG, "TNT Slime Spawn Egg");
+
+			addConfig("spawn_settings", "Spawn Settings", "Settings for the slime spawn rates");
+			addConfig("minY", "Minimum Y Level", "Defines from which Y level and below a TNT slime can naturally spawn underground [Default: 40]");
+		}
+
+		/**
+		 * Add the translation for a config entry
+		 *
+		 * @param path        The path of the config entry
+		 * @param name        The name of the config entry
+		 * @param description The description of the config entry (optional in case of targeting "title" or similar entries that have no tooltip)
+		 */
+		private void addConfig(String path, String name, @Nullable String description) {
+			this.add("tntslimes.configuration." + path, name);
+			if (description != null && !description.isEmpty())
+				this.add("tntslimes.configuration." + path + ".tooltip", description);
 		}
 	}
 
