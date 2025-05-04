@@ -1,4 +1,8 @@
 {
   "entity.tntslimes.tnt_slime": "TNT Slime",
-  "item.tntslimes.tnt_slime_spawn_egg": "TNT Slime Spawn Egg"
+  "item.tntslimes.tnt_slime_spawn_egg": "TNT Slime Spawn Egg",
+  "tntslimes.configuration.minY": "Minimum Y Level",
+  "tntslimes.configuration.minY.tooltip": "Defines from which Y level and below a TNT slime can naturally spawn underground [Default: 40]",
+  "tntslimes.configuration.spawn_settings": "Spawn Settings",
+  "tntslimes.configuration.spawn_settings.tooltip": "Settings for the slime spawn rates"
 }
