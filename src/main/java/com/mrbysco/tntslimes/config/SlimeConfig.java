@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class SlimeConfig {
 	public static class Common {
 		public final ModConfigSpec.IntValue minY;
+		public final ModConfigSpec.BooleanValue explodeOnDeath;
 
 		Common(ModConfigSpec.Builder builder) {
 			builder.comment("Settings for the slime spawn rates")
@@ -18,6 +19,10 @@ public class SlimeConfig {
 			minY = builder
 					.comment("Defines from which Y level and below  a TNT slime can naturally spawn underground [Default: 40]")
 					.defineInRange("minY", 40, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+			explodeOnDeath = builder
+					.comment("Defines if TNT Slimes explode on death by explosion [Default: true]")
+					.define("explodeOnDeath", true);
 
 			builder.pop();
 		}

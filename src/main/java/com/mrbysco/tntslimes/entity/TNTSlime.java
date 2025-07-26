@@ -10,12 +10,14 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -71,8 +73,8 @@ public class TNTSlime extends Slime {
 	public void readAdditionalSaveData(CompoundTag tag) {
 		super.readAdditionalSaveData(tag);
 
-		this.maxSwell = tag.getShortOr("Fuse", (short)30);
-		this.explosionRadius = tag.getByteOr("ExplosionRadius", (byte)3);
+		this.maxSwell = tag.getShortOr("Fuse", (short) 30);
+		this.explosionRadius = tag.getByteOr("ExplosionRadius", (byte) 3);
 		if (tag.getBooleanOr("ignited", false)) {
 			this.ignite();
 		}
@@ -125,6 +127,7 @@ public class TNTSlime extends Slime {
 		super.tick();
 	}
 
+	@Override
 	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 		ItemStack itemstack = player.getItemInHand(hand);
 		if (itemstack.is(ItemTags.CREEPER_IGNITERS)) {
@@ -150,10 +153,19 @@ public class TNTSlime extends Slime {
 	private void explodeSlime() {
 		if (this.level() instanceof ServerLevel serverlevel) {
 			this.dead = true;
-			serverlevel.explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius, Level.ExplosionInteraction.MOB);
+			serverlevel.explode(this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius, Level.ExplosionInteraction.MOB);
 			this.triggerOnDeathMobEffects(serverlevel, Entity.RemovalReason.KILLED);
 			this.discard();
 		}
+	}
+
+	@Override
+	public boolean isInvulnerableTo(ServerLevel level, DamageSource damageSource) {
+		if (damageSource.is(DamageTypeTags.IS_EXPLOSION) && SlimeConfig.COMMON.explodeOnDeath.get()) {
+			this.ignite();
+			return true;
+		}
+		return super.isInvulnerableTo(level, damageSource);
 	}
 
 	@Override
