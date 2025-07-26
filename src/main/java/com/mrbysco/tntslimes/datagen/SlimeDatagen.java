@@ -2,6 +2,9 @@ package com.mrbysco.tntslimes.datagen;
 
 import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
@@ -35,9 +38,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
@@ -55,25 +56,21 @@ import java.util.stream.Stream;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class SlimeDatagen {
 	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event) {
+	public static void gatherData(GatherDataEvent.Client event) {
 		DataGenerator generator = event.getGenerator();
 		PackOutput packOutput = generator.getPackOutput();
-		ExistingFileHelper helper = event.getExistingFileHelper();
 		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-		if (event.includeServer()) {
-			generator.addProvider(event.includeServer(), new Loots(packOutput, lookupProvider));
-		}
-		if (event.includeClient()) {
-			generator.addProvider(event.includeServer(), new Language(packOutput));
-			generator.addProvider(event.includeServer(), new ItemModels(packOutput, helper));
+		generator.addProvider(true, new Loots(packOutput, lookupProvider));
 
-			generator.addProvider(event.includeServer(), new DatapackEntries(
-					packOutput,
-					event.getLookupProvider(),
-					Set.of(TNTSlimes.MOD_ID)
-			));
-		}
+		generator.addProvider(true, new Language(packOutput));
+		generator.addProvider(true, new Models(packOutput));
+
+		generator.addProvider(true, new DatapackEntries(
+				packOutput,
+				event.getLookupProvider(),
+				Set.of(TNTSlimes.MOD_ID)
+		));
 	}
 
 	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
@@ -167,14 +164,14 @@ public class SlimeDatagen {
 		}
 	}
 
-	private static class ItemModels extends ItemModelProvider {
-		public ItemModels(PackOutput packOutput, ExistingFileHelper helper) {
-			super(packOutput, TNTSlimes.MOD_ID, helper);
+	private static class Models extends ModelProvider {
+		public Models(PackOutput packOutput) {
+			super(packOutput, TNTSlimes.MOD_ID);
 		}
 
 		@Override
-		protected void registerModels() {
-			withExistingParent(SlimeRegistry.TNT_SLIME_SPAWN_EGG.getId().getPath(), ResourceLocation.withDefaultNamespace("item/template_spawn_egg"));
+		protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+			itemModels.generateSpawnEgg(SlimeRegistry.TNT_SLIME_SPAWN_EGG.get(), 0xb11527, 0xdb2f1a);
 		}
 	}
 }

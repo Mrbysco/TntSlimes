@@ -5,6 +5,7 @@ import com.mrbysco.tntslimes.TNTSlimes;
 import com.mrbysco.tntslimes.entity.TNTSlime;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
+import net.minecraft.client.renderer.entity.state.SlimeRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
@@ -17,10 +18,23 @@ public class TNTSlimeRenderer extends SlimeRenderer {
 	}
 
 	@Override
-	protected void scale(Slime slime, PoseStack poseStack, float tick) {
-		super.scale(slime, poseStack, tick);
-		if (slime instanceof TNTSlime tntSlime) {
-			float f = tntSlime.getSwelling(tick);
+	public SlimeRenderState createRenderState() {
+		return new TNTSlimeRenderState();
+	}
+
+	@Override
+	public void extractRenderState(Slime slime, SlimeRenderState renderState, float partialTick) {
+		super.extractRenderState(slime, renderState, partialTick);
+		if (slime instanceof TNTSlime tntSlime && renderState instanceof TNTSlimeRenderState tntState) {
+			tntState.swelling = tntSlime.getSwelling(partialTick);
+		}
+	}
+
+	@Override
+	protected void scale(SlimeRenderState renderState, PoseStack poseStack) {
+		super.scale(renderState, poseStack);
+		if (renderState instanceof TNTSlimeRenderState tntState) {
+			float f = tntState.swelling;
 			float f1 = 1.0F + Mth.sin(f * 100.0F) * f * 0.01F;
 			f = Mth.clamp(f, 0.0F, 1.0F);
 			f *= f;
@@ -32,16 +46,16 @@ public class TNTSlimeRenderer extends SlimeRenderer {
 	}
 
 	@Override
-	protected float getWhiteOverlayProgress(Slime slime, float tick) {
-		if (slime instanceof TNTSlime tntSlime) {
-			float f = tntSlime.getSwelling(tick);
-			return (int) (f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
+	protected float getWhiteOverlayProgress(SlimeRenderState renderState) {
+		if (renderState instanceof TNTSlimeRenderState tntState) {
+			float f = tntState.swelling;
+			return (int)(f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
 		}
-		return super.getWhiteOverlayProgress(slime, tick);
+		return super.getWhiteOverlayProgress(renderState);
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(Slime entity) {
+	public ResourceLocation getTextureLocation(SlimeRenderState renderState) {
 		return TNT_SLIME_TEXTURE;
 	}
 }
