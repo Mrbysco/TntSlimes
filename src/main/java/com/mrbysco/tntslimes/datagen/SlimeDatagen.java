@@ -55,7 +55,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 public class SlimeDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Client event) {
@@ -150,6 +150,7 @@ public class SlimeDatagen {
 
 			addConfig("spawn_settings", "Spawn Settings", "Settings for the slime spawn rates");
 			addConfig("minY", "Minimum Y Level", "Defines from which Y level and below a TNT slime can naturally spawn underground [Default: 40]");
+			addConfig("explodeOnDeath", "Explode on Death", "Defines if TNT Slimes explode on death by explosion [Default: true]");
 		}
 
 		/**

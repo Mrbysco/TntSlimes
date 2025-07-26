@@ -3,7 +3,6 @@ package com.mrbysco.tntslimes.entity;
 import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.entity.goal.TNTSlimeSwellGoal;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -33,6 +32,8 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TNTSlime extends Slime {
 	private static final EntityDataAccessor<Integer> DATA_SWELL_DIR = SynchedEntityData.defineId(TNTSlime.class, EntityDataSerializers.INT);
@@ -61,21 +62,21 @@ public class TNTSlime extends Slime {
 	}
 
 	@Override
-	public void addAdditionalSaveData(CompoundTag tag) {
-		super.addAdditionalSaveData(tag);
+	public void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);
 
-		tag.putShort("Fuse", (short) this.maxSwell);
-		tag.putByte("ExplosionRadius", (byte) this.explosionRadius);
-		tag.putBoolean("ignited", this.isIgnited());
+		output.putShort("Fuse", (short) this.maxSwell);
+		output.putByte("ExplosionRadius", (byte) this.explosionRadius);
+		output.putBoolean("ignited", this.isIgnited());
 	}
 
 	@Override
-	public void readAdditionalSaveData(CompoundTag tag) {
-		super.readAdditionalSaveData(tag);
+	public void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);
 
-		this.maxSwell = tag.getShortOr("Fuse", (short) 30);
-		this.explosionRadius = tag.getByteOr("ExplosionRadius", (byte) 3);
-		if (tag.getBooleanOr("ignited", false)) {
+		this.maxSwell = input.getShortOr("Fuse", (short) 30);
+		this.explosionRadius = input.getByteOr("ExplosionRadius", (byte) 3);
+		if (input.getBooleanOr("ignited", false)) {
 			this.ignite();
 		}
 	}
