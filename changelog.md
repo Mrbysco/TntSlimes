@@ -1,1 +1,2 @@
-* Update to 1.21.4
+* Update to 1.21.5
+* TNT Slimes now explode when blown up by explosions
