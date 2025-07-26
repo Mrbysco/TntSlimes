@@ -71,15 +71,9 @@ public class TNTSlime extends Slime {
 	public void readAdditionalSaveData(CompoundTag tag) {
 		super.readAdditionalSaveData(tag);
 
-		if (tag.contains("Fuse", 99)) {
-			this.maxSwell = tag.getShort("Fuse");
-		}
-
-		if (tag.contains("ExplosionRadius", 99)) {
-			this.explosionRadius = tag.getByte("ExplosionRadius");
-		}
-
-		if (tag.getBoolean("ignited")) {
+		this.maxSwell = tag.getShortOr("Fuse", (short)30);
+		this.explosionRadius = tag.getByteOr("ExplosionRadius", (byte)3);
+		if (tag.getBooleanOr("ignited", false)) {
 			this.ignite();
 		}
 	}

@@ -5,6 +5,7 @@ import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
@@ -19,6 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
@@ -85,7 +87,7 @@ public class SlimeDatagen {
 					final HolderGetter<Biome> biomeHolderGetter = context.lookup(Registries.BIOME);
 					final BiomeModifier addSpawn = BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
 							biomeHolderGetter.getOrThrow(BiomeTags.IS_OVERWORLD),
-							new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 1, 2, 10));
+							new Weighted<>(new SpawnerData(SlimeRegistry.TNT_SLIME.get(), 2, 10), 1));
 					context.register(createModifierKey("add_tnt_slime_spawn"), addSpawn);
 				});
 
@@ -171,7 +173,7 @@ public class SlimeDatagen {
 
 		@Override
 		protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-			itemModels.generateSpawnEgg(SlimeRegistry.TNT_SLIME_SPAWN_EGG.get(), 0xb11527, 0xdb2f1a);
+			itemModels.generateFlatItem(SlimeRegistry.TNT_SLIME_SPAWN_EGG.get(), ModelTemplates.FLAT_ITEM);
 		}
 	}
 }

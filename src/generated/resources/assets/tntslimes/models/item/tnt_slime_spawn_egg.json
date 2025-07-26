@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "tntslimes:item/tnt_slime_spawn_egg"
+  }
+}
