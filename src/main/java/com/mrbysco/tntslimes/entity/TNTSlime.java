@@ -136,12 +136,12 @@ public class TNTSlime extends Slime {
 			this.level()
 					.playSound(player, this.getX(), this.getY(), this.getZ(), soundevent,
 							this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
-			if (!this.level().isClientSide) {
+			if (!this.level().isClientSide()) {
 				this.ignite();
 				if (!itemstack.isDamageableItem()) {
 					itemstack.shrink(1);
 				} else {
-					itemstack.hurtAndBreak(1, player, getSlotForHand(hand));
+					itemstack.hurtAndBreak(1, player, hand.asEquipmentSlot());
 				}
 			}
 

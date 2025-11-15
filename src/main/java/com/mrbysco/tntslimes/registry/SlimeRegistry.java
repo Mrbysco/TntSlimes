@@ -19,5 +19,5 @@ public class SlimeRegistry {
 							.clientTrackingRange(10).spawnDimensionsScale(4.0F));
 
 	public static final DeferredItem<SpawnEggItem> TNT_SLIME_SPAWN_EGG = ITEMS.registerItem("tnt_slime_spawn_egg",
-			(properties) -> new SpawnEggItem(SlimeRegistry.TNT_SLIME.get(), properties));
+			SpawnEggItem::new, (properties) -> properties.spawnEgg(SlimeRegistry.TNT_SLIME.get()));
 }
