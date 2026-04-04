@@ -195,7 +195,7 @@ public class TNTSlime extends Slime {
 	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
 		if (level.getDifficulty() != Difficulty.PEACEFUL) {
 			if (level.getBiome(pos).is(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS) && pos.getY() > 50 && pos.getY() < 70) {
-				float f = (Float) level.environmentAttributes().getValue(EnvironmentAttributes.SURFACE_SLIME_SPAWN_CHANCE, pos);
+				float f = level.environmentAttributes().getValue(EnvironmentAttributes.SURFACE_SLIME_SPAWN_CHANCE, pos);
 				if (random.nextFloat() < f && level.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
 					return checkMobSpawnRules(entityType, level, spawnReason, pos, random);
 				}
@@ -205,8 +205,8 @@ public class TNTSlime extends Slime {
 				return false;
 			}
 
-			ChunkPos chunkpos = new ChunkPos(pos);
-			boolean flag = WorldgenRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, ((WorldGenLevel) level).getSeed(), 987234911L).nextInt(10) == 0;
+			ChunkPos chunkPos = ChunkPos.containing(pos);
+			boolean flag = WorldgenRandom.seedSlimeChunk(chunkPos.x(), chunkPos.z(), ((WorldGenLevel) level).getSeed(), 987234911L).nextInt(10) == 0;
 			if (random.nextInt(10) == 0 && flag && pos.getY() < SlimeConfig.COMMON.minY.get()) {
 				return checkMobSpawnRules(entityType, level, spawnReason, pos, random);
 			}

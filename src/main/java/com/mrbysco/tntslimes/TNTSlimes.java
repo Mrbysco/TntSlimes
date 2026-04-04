@@ -1,7 +1,6 @@
 package com.mrbysco.tntslimes;
 
 import com.mojang.logging.LogUtils;
-import com.mrbysco.tntslimes.client.ClientHandler;
 import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import com.mrbysco.tntslimes.registry.SlimeSetup;
@@ -31,13 +30,8 @@ public class TNTSlimes {
 
 		eventBus.addListener(this::addTabContents);
 
-		eventBus.addListener(SlimeSetup::registerSpawnPlacements);
-		eventBus.addListener(SlimeSetup::registerEntityAttributes);
-
 		if (dist.isClient()) {
 			container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-			eventBus.addListener(ClientHandler::registerEntityRenders);
-			eventBus.addListener(ClientHandler::registerLayerDefinitions);
 		}
 	}
 
