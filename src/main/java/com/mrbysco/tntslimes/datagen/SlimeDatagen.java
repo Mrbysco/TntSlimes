@@ -17,7 +17,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.random.Weighted;
@@ -76,7 +75,7 @@ public class SlimeDatagen {
 	}
 
 	private static ResourceKey<BiomeModifier> createModifierKey(String name) {
-		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, name));
+		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, TNTSlimes.modLoc(name));
 	}
 
 	private static class DatapackEntries extends DatapackBuiltinEntriesProvider {

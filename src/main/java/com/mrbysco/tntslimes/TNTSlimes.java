@@ -5,6 +5,7 @@ import com.mrbysco.tntslimes.client.ClientHandler;
 import com.mrbysco.tntslimes.config.SlimeConfig;
 import com.mrbysco.tntslimes.registry.SlimeRegistry;
 import com.mrbysco.tntslimes.registry.SlimeSetup;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -44,5 +45,9 @@ public class TNTSlimes {
 		if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
 			event.accept(SlimeRegistry.TNT_SLIME_SPAWN_EGG);
 		}
+	}
+
+	public static Identifier modLoc(String path) {
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

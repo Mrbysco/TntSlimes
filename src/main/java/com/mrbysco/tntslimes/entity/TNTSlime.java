@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
@@ -16,6 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -29,7 +31,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.storage.ValueInput;
@@ -191,11 +192,13 @@ public class TNTSlime extends Slime {
 		this.xpReward = i;
 	}
 
-	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
+	public static boolean checkTNTSlimeSpawnRules(EntityType<TNTSlime> entityType, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
 		if (level.getDifficulty() != Difficulty.PEACEFUL) {
-			if (level.getBiome(pos).is(Biomes.SWAMP) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5F &&
-					random.nextFloat() < level.getMoonBrightness() && level.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
-				return checkMobSpawnRules(entityType, level, spawnType, pos, random);
+			if (level.getBiome(pos).is(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS) && pos.getY() > 50 && pos.getY() < 70) {
+				float f = (Float) level.environmentAttributes().getValue(EnvironmentAttributes.SURFACE_SLIME_SPAWN_CHANCE, pos);
+				if (random.nextFloat() < f && level.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
+					return checkMobSpawnRules(entityType, level, spawnReason, pos, random);
+				}
 			}
 
 			if (!(level instanceof WorldGenLevel)) {
@@ -205,7 +208,7 @@ public class TNTSlime extends Slime {
 			ChunkPos chunkpos = new ChunkPos(pos);
 			boolean flag = WorldgenRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, ((WorldGenLevel) level).getSeed(), 987234911L).nextInt(10) == 0;
 			if (random.nextInt(10) == 0 && flag && pos.getY() < SlimeConfig.COMMON.minY.get()) {
-				return checkMobSpawnRules(entityType, level, spawnType, pos, random);
+				return checkMobSpawnRules(entityType, level, spawnReason, pos, random);
 			}
 		}
 

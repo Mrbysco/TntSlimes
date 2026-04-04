@@ -6,12 +6,12 @@ import com.mrbysco.tntslimes.entity.TNTSlime;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.entity.state.SlimeRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
 
 public class TNTSlimeRenderer extends SlimeRenderer {
-	private static final ResourceLocation TNT_SLIME_TEXTURE = ResourceLocation.fromNamespaceAndPath(TNTSlimes.MOD_ID, "textures/entity/tnt_slime/tnt_slime.png");
+	private static final Identifier TNT_SLIME_TEXTURE = TNTSlimes.modLoc("textures/entity/tnt_slime/tnt_slime.png");
 
 	public TNTSlimeRenderer(EntityRendererProvider.Context context) {
 		super(context);
@@ -49,13 +49,13 @@ public class TNTSlimeRenderer extends SlimeRenderer {
 	protected float getWhiteOverlayProgress(SlimeRenderState renderState) {
 		if (renderState instanceof TNTSlimeRenderState tntState) {
 			float f = tntState.swelling;
-			return (int)(f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
+			return (int) (f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
 		}
 		return super.getWhiteOverlayProgress(renderState);
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(SlimeRenderState renderState) {
+	public Identifier getTextureLocation(SlimeRenderState renderState) {
 		return TNT_SLIME_TEXTURE;
 	}
 }
